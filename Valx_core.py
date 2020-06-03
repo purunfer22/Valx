@@ -13,7 +13,7 @@ from NLP import sentence_keywords
 greater, greater_equal, greater_equal2, lower, lower_equal, lower_equal2, equal, between, selects, connect, features, temporal, temporal_con, error1, error2, symbols, numbers, unit_special, unit_ori, unit_ori_s, unit_exp, negation = "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
 
 def init_features ():
-    feature_set = ufile.read_csv_as_dict ('data\\numeric_features.csv', 0, 1, True)
+    feature_set = ufile.read_csv_as_dict ('data/numeric_features.csv', 0, 1, True)
     global greater, greater_equal, greater_equal2, lower, lower_equal, lower_equal2, equal, between, selects, connect, features, temporal, temporal_con, error1, error2, symbols, numbers, unit_special, unit_ori, unit_ori_s, unit_exp, negation
     greater, greater_equal, greater_equal2, lower, lower_equal, lower_equal2, equal, between, selects, connect, features, temporal, temporal_con, error1, error2, symbols, numbers, unit_special, unit_ori, unit_ori_s, unit_exp, negation = \
     feature_set["greater"], feature_set["greater_equal"], feature_set["greater_equal2"], feature_set["lower"], feature_set["lower_equal"], feature_set["lower_equal2"], feature_set["equal"], feature_set["between"], feature_set["selects"], feature_set["connect"], feature_set["features"], feature_set["temporal"], feature_set["temporal_con"], feature_set["error1"], feature_set["error2"], feature_set["symbols"], feature_set["numbers"], feature_set["unit_special"], feature_set["unit_ori"], feature_set["unit_ori_s"], feature_set["unit_exp"], feature_set["negation"]
@@ -23,7 +23,7 @@ def init_features ():
 
 def preprocessing (text):
     # handle special characters
-    text = text.decode('ascii', 'ignore')
+    # text = text.decode('ascii', 'ignore')
 
     text = text.strip().replace('\n\n', '#')
     text = text.replace ('\n', '')
@@ -115,7 +115,7 @@ def extract_candidates_name (sections_num, candidates_num, name_list):
 #====identify expressions and formalize them into labels "<VML(tag) L(logic, e.g., greater_equal)=X U(unit)=X>value</VML>"
 def formalize_expressions (candidate):
     text = candidate
-    csvfile = open('data\\rules.csv', 'rb')
+    csvfile = open('data/rules.csv', 'r')
     reader = csv.reader(csvfile)
     now_pattern = "preprocessing"
 
@@ -134,14 +134,16 @@ def formalize_expressions (candidate):
             aselect = selects.split('|')
             for selec in aselect:
                 selec = selec.replace('X', '<VML Unit([^<>]+)>([^<>]+)</VML>')
-                text = re.sub(selec, r'<VML Unit\1>\2</VML>', text) #
+                if len(selec) > 0 : 
+                    text = re.sub(selec, r'<VML Unit\1>\2</VML>', text) 
 
             #  process 'between' expressions
             global between
             betweens = between.split('|')
             for betw in betweens:
                 betw = betw.replace('X', '<VML Unit([^<>]+)>([^<>]+)</VML>')
-                text = re.sub(betw, r'<VML Logic=greater_equal Unit\1>\2</VML> - <VML Logic=lower_equal Unit\3>\4</VML>', text) #
+                if len(betw) > 0 :
+                    text = re.sub(betw, r'<VML Logic=greater_equal Unit\1>\2</VML> - <VML Logic=lower_equal Unit\3>\4</VML>', text) #
         text = re.sub(source_pattern, target_pattern, text)
         now_pattern = pattern_function
 
@@ -286,7 +288,7 @@ def normalization (nor_unit, exps):
             elif exp[3].startswith('g/l'):
                 exp[2], exp[3] = exp[2]*7.745, nor_unit
         elif nor_unit == 'kg/m2':            
-            if exp[3]<>'' and exp[3] <> 'kg/m2':
+            if exp[3]!='' and exp[3] != 'kg/m2':
                 exp[3] = nor_unit
             elif exp[3] == '':
                 exp[3] = nor_unit

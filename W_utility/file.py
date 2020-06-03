@@ -2,9 +2,10 @@
 
 # @author: rm3086 (at) columbia (dot) edu
 
-import csv, shutil, os, sys, glob, cPickle
-csv.field_size_limit(sys.maxint)
-from log import strd_logger
+import csv, shutil, os, sys, glob
+import _pickle as cPickle
+csv.field_size_limit(sys.maxsize)
+from .log import strd_logger
 
 # logger
 global log

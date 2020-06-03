@@ -3,8 +3,8 @@
 # Created by Tony HAO, th2510@columbia.edu
 
 import os,sys,re,string
-import sentence as NLP_sent
-import word as NLP_word
+from . import sentence as NLP_sent
+from . import word as NLP_word
 import nltk
 				
 #=========================================syntax
@@ -89,15 +89,15 @@ def keywords_ngrams(sentence):
 			continue
 		words = NLP_word.word_splitting(phrase.lower())
 		stop_pos = [] # record all positions of stop  or non-preferred (POS) words in the phrase to increase efficiency
-		for i in xrange(len(words)):
+		for i in range(len(words)):
 			type = word_checking_stop(words[i])
 			stop_pos.append(type)
 		
 		# Generate n-gram
-		for i in xrange(len(words)):
+		for i in range(len(words)):
 			if 0 < stop_pos[i]:
 				continue
-			for j in reversed(xrange(i+1, min(len(words), i+4)+1)): # the maximum length of a ngram is 5
+			for j in reversed(range(i+1, min(len(words), i+4)+1)): # the maximum length of a ngram is 5
 				if 0 < stop_pos[j-1]:# check validity
 					continue
 				ngram = ' '.join(words[i:j])
@@ -119,15 +119,15 @@ def keywords_ngrams_reverse(sentence):
 		words = splitter.split(phrase)
 			
 		stop_pos = [] # record all positions of stop  or non-preferred (POS) words in the phrase to increase efficiency
-		for i in xrange(len(words)):
+		for i in range(len(words)):
 			type = word_checking_stop(words[i])
 			stop_pos.append(type)
 		
 		# Generate n-gram
-		for i in reversed(xrange(len(words))):
+		for i in reversed(range(len(words))):
 			if 0 < stop_pos[i]:
 				continue
-			for j in xrange(max(0, i-98), i+1): # the maximum length of a ngram is 10
+			for j in range(max(0, i-98), i+1): # the maximum length of a ngram is 10
 				if 0 < stop_pos[j]:# check validity
 					continue
 				ngram = ' '.join(words[j:i+1])

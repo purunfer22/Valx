@@ -8,57 +8,53 @@ import os,sys,re
 import Valx_core
 
 
-def extract_variables (fdin, ffea, ffea2, var):
+fea_dict_dk = ufile.read_csv_as_dict_with_multiple_items('data/variable_features_dk.csv')
+fea_dict_umls = ufile.read_csv_as_dict('data/variable_features_umls.csv')
+var = 'All'
+
+#load numeric feature list
+Valx_core.init_features()
+
+def extract_values(text):
     # read input data
-    if fdin is None or fdin =="": return False
-    trials = ufile.read_csv (fdin)
-    if trials is None or len(trials) <= 0:
-        print ext_print ('input data error, please check either no such file or no data --- interrupting')
+    if text is None or text =="": return False
+    # trials = ufile.read_csv (fdin)
+    trials = [text]
+    if trials is None or len(trials) == 0:
         return False
-    print ext_print ('found a total of %d data items' % len(trials))
-    
+
     # read feature list - domain knowledge
-    if ffea is None or ffea =="": return False
-    fea_dict_dk = ufile.read_csv_as_dict_with_multiple_items (ffea)
     if fea_dict_dk is None or len(fea_dict_dk) <= 0:
-        print ext_print ('no feature data available --- interrupting')
         return False
 
     # get feature info
     features, feature_dict_dk = {}, {}
     if var == "All":
         features = fea_dict_dk
-        del features["Variable name"]
+        if "Variable name" in features : 
+            del features["Variable name"]
     elif var in fea_dict_dk:
         features = {var:fea_dict_dk[var]}
-    for key, value in fea_dict_dk.iteritems():
+    for key, value in fea_dict_dk.items():
         names = value[0].lower().split('|')
         for name in names:
             if name.strip() != '': feature_dict_dk[name.strip()] =key
 
     # read feature list - UMLS (can be replaced by full UMLS)
-    if ffea2 is None or ffea2 =="": return False
-    fea_dict_umls = ufile.read_csv_as_dict (ffea2)
     if fea_dict_umls is None or len(fea_dict_umls) <= 0:
-        print ext_print ('no feature data available --- interrupting')
-        return False
-
-    #load numeric feature list
-    Valx_core.init_features()
+        return False 
 
     output = []
-    for i in xrange(len(trials)):
-        if i%1000 == 0:
-            print ('processing %d' % i)
+    for i in range(len(trials)):
         # pre-processing eligibility criteria text
-        text = Valx_core.preprocessing(trials[i][1]) # trials[i][1] is the eligibility criteria text
+        text = Valx_core.preprocessing(trials[i]) # trials[i][1] is the eligibility criteria text
         (sections_num, candidates_num) = Valx_core.extract_candidates_numeric(text) # extract candidates containing numeric features
-        for j in xrange(len(candidates_num)): # for each candidate
+        for j in range(len(candidates_num)): # for each candidate
             exp_text = Valx_core.formalize_expressions(candidates_num[j]) # identify and formalize values
             (exp_text, key_ngrams) = Valx_core.identify_variable(exp_text, feature_dict_dk, fea_dict_umls) # identify variable mentions and map them to names
             (variables, vars_values) = Valx_core.associate_variable_values(exp_text)
             all_exps = []
-            for k in xrange(len(variables)):
+            for k in range(len(variables)):
                 curr_var = variables[k]
                 curr_exps = vars_values[k]
                 if curr_var in features:
@@ -69,28 +65,140 @@ def extract_variables (fdin, ffea, ffea2, var):
                 if len(curr_exps) > 0:
                     if var == "All" or var.lower() == curr_var.lower() or var.lower() in curr_var.lower(): all_exps += curr_exps                     
                  
-            if len(all_exps) > 0: output.append((trials[i][0], sections_num[j], candidates_num[j], exp_text, str(all_exps).replace("u'", "'"))) # output result
-
-    # output result
-    fout = os.path.splitext(fdin)[0] + "_exp_%s.csv" % var
-    ufile.write_csv (fout, output)
-    print ext_print ('saved processed results into: %s' % fout)
-    return True
+            if len(all_exps) > 0: output.append((trials[i], sections_num[j], candidates_num[j], exp_text, str(all_exps).replace("u'", "'"))) # output result
+    return output
 
 
-# processing the command line options
-import argparse
-def _process_args():
-    parser = argparse.ArgumentParser(description='')
-    parser.add_argument('-i', default=r"D:\_My_programs\_CUMC\Extract_Variables\_GitHub\data\example data diabetes_Type 1.csv", help='input: a specific disease')
-    parser.add_argument('-f1', default=r"D:\_My_programs\_CUMC\Extract_Variables\_GitHub\data\variable_features_dk.csv", help='input: a feature list')
-    parser.add_argument('-f2', default=r"D:\_My_programs\_CUMC\Extract_Variables\_GitHub\data\variable_features_umls.csv", help='input: a feature list')
-    parser.add_argument('-v', default="HBA1C", help='Variable name: All, HBA1C, BMI, Glucose, Creatinine, BP-Systolic, BP-Diastolic') # 'All' means to detect all variables
-    return parser.parse_args(sys.argv[1:])
+
+def get_words_space_blocks(text) : 
+    """
+    Input: text-a string
+    Output: [{'word':"word_string", "start":, "end":, "space_length"}....] 
+    """
+    index=0
+    word = ""
+    word_space_blocks = [] 
+    start_index=0
+    end_index=0
+    while index<len(text) : 
+        character = text[index]
+        if character==' ': 
+            space_length = 1
+            index = index + 1 
+            while index < len(text) and character == ' ': 
+                character = text[index]
+                if character == ' ' : 
+                    space_length = space_length + 1 
+                    index = index + 1  
+            word_space_block = {'word':word, 'start_index':start_index, 'end_index':end_index, 'space_length':space_length}
+            word_space_blocks.append(word_space_block)
+        else : 
+            start_index = index
+            index = index + 1 
+            while index < len(text) and character != ' ': 
+                character = text[index]
+                if character != ' ' : 
+                    index = index + 1
+            end_index = index - 1 
+            word = text[start_index:end_index+1]
+            if index == len(text) : 
+                word_space_block = {'word':word, 'start_index':start_index, 'end_index':end_index, 'space_length':0}
+                word_space_blocks.append(word_space_block)
+
+    return word_space_blocks
 
 
-if __name__ == '__main__' :
-    print ''
-    args = _process_args()
-    extract_variables (args.i, args.f1, args.f2, args.v)
-    print ''
+def get_alphanumeric_groups(word) : 
+    """
+    Input - 
+    Output - 
+    """
+    all_words = re.findall('[a-zA-Z0-9]+', word)
+    return all_words
+
+
+# def process_valx_results(original_text, valx_output) : 
+#     """
+#     Input: original_text - The original string passed as input to extract_values function above
+#            valx_outputs - The output of extract_values method which is passed the original_text 
+#            Let say for text="My weight is 80 kg"
+#            valx_output looks like this 
+#            [('My weight is 80 kg',
+#             'Inclusion',
+#             'my weight is 80 kg',
+#             'my <VL Label=Weight Source=DK>weight</VL> is <VML Logic=equal Unit=kg>80</VML>',
+#             "[['Weight', '=', 80.0, 'kg']]")]
+
+
+#     Output: Each value detected in valx_output is mapped to its exact starting and ending index in the original string with the type 
+#     of value. For eg : 
+#             For original_text = My weight is 80 kg, with assuming correct valx_output (i.e weight figured out) 
+#             Output = [{'value':"80 kg", "type":"weight", "start_index":13, "end_index":18}]
+#     """
+#     all_values = valx_output[4]
+#     # all_words = original_text.split(" ")
+#     # for word in all_words : 
+
+#     # for value in check_value 
+
+def process_valx_results(original_text, valx_outputs) : 
+
+    word_blocks = get_words_space_blocks(original_text)
+
+    count_word_blocks = len(word_blocks)
+
+    word_block_index = 0
+
+    result = [] 
+    
+    for output in valx_outputs : 
+
+        value_exps = output[4]
+        value_exps = eval(value_exps)
+
+        for value_exp in value_exps :
+            value = value_exp[2]
+            unit = value_exp[3]
+            value_type = value_exp[0]
+
+            if word_block_index == count_word_blocks : 
+                break 
+            else : 
+                while word_block_index < count_word_blocks : 
+                    word_block = word_blocks[word_block_index]
+                    word = word_block['word']
+                    word_start_index = word_block["start_index"]
+                    word_end_index = word_block["end_index"]
+                    all_alphanumerics = get_alphanumeric_groups(word)
+                    if str(value) in all_alphanumerics or str(int(value)) in all_alphanumerics : 
+                        if word_block_index < count_word_blocks - 1 : 
+                            next_word_blocks = word_blocks[word_block_index+1:word_block_index+len(unit.split(" "))+1]
+                            unit_word = " ".join([word_block['word'] for word_block in next_word_blocks])
+                            if unit_word == unit : 
+                                if len(next_word_blocks) == 0 : 
+                                    end_index = word_end_index
+                                else : 
+                                    end_index = next_word_blocks[-1]['end_index']
+                                result.append({'Entity':" ".join([word, unit]), 
+                                               "EntityType":value_type, 
+                                               "StartIndex":word_start_index,
+                                               "EndIndex":end_index})
+                                word_block_index = word_block_index + len(unit.split(" ")) + 1 
+                                break 
+                    else :
+                        if str(value)+unit in all_alphanumerics  or str(int(value))+unit in all_alphanumerics: 
+                            result.append({'Entity': word, 
+                                           'EntityType':value_type,
+                                           'StartIndex':word_start_index,
+                                           'EndIndex':word_end_index
+                                          })
+                            word_block_index = word_block_index + 1 
+                    word_block_index = word_block_index + 1
+
+    return result
+
+        
+
+
+
+

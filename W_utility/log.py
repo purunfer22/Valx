@@ -4,7 +4,7 @@ import logging
 from datetime import datetime
 
 # define the script global logger
-def ext_print (name):
+def ext_print(name):
 	tnow = datetime.now()
 	name = '['+str(tnow)+'] ' +name
 	return name
@@ -19,7 +19,7 @@ def ext_print (name):
 #log.info ('XXX')
 
 # define the script global logger
-def strd_logger (name):
+def strd_logger(name):
 	log = logging.getLogger (name)
 	log.setLevel (logging.INFO)
 	#formatter = logging.Formatter('[%(asctime)s %(levelname)s] %(message)s', "%Y-%m-%d %H:%M:%S")

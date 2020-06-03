@@ -5,7 +5,7 @@ Glucose tolerance,oral glucose tolerance|glucose tolerance|oral glucose,grams,TE
 Insulin,fasting insulin|insulin glargine|insulin,uiu/ml,TEMPORAL|mg/dl|%|kg/m2,uiu/ml,0,1000
 BMI,Body mass index|BMI|Quetelet index,kg/m2|kg/m^2|kg/m\(2\)|kg\.m2|kgm-2|kg/m|lb/in2|kg|mg/kg2,TEMPORAL|%|percentiu|uiu|nmol|/|g|millimoles|ml/min,kg/m2,16,40,http://apps.who.int/bmi/index.jsp?introPage=intro_3.html
 Creatinine,serum creatinine|s - creatinine|creatinine,mg/dl|micromol/l|umol/l|mol/l|mmol/l|mmol|mg/g|mg/gram|m/dl|ml/min,TEMPORAL|%|percentiu|uiu|kg|nmol|/|g|mg|millimoles,mg/dl,0.4,2,http://www.webmd.com/a-to-z-guides/creatinine-and-creatinine-clearance?page=3
-Creatinine ratio,Creatinine ratio,ug/mg,TMEMPORAL,ug/mg,0,1
+Creatinine ratio,Creatinine ratio,ug/mg,TEMPORAL,ug/mg,0,1
 Creatinine clearance,creatinine clearance,ml/min,TEMPORAL|%|percentiu|uiu|kg|nmol|/|g|mg|millimoles,mg/dl,10,100,
 insulin naive,insulin naive,,TEMPORAL,oads,0,100, 
 BP,hypersensitivity|HYSN|hypertension|blood pressure|BP,,TEMPORAL,,0,1000,
@@ -26,6 +26,7 @@ Cholesterol,cholesterol,,TEMPORAL,,0,1000,
 Triglyceride,plasma triglycerides|serum triglyceride|triglycerides|triglyceride,,TEMPORAL,,0,1000,
 Transaminase,transaminase,,TEMPORAL,,0,1000,
 Age,years of age|aged|ages|age|years old|year old|old,TEMPORAL,ALL_OTHER,years,0,100,
+Height,height,ft|cm|m|in|inch|metre|inch,TEMPORAL,cm,30,200
 TGHB,tghb,%,TEMPORAL,,0,1000,
 Triglycerides,triglycerides,mg/dl,TEMPORAL,mg/dl,0,1000
 LDL,triglycerides,mg,TEMPORAL,mg/dl,0,1000
@@ -129,7 +130,7 @@ PR,pr,msec,TEMPORAL,,0,1000
 QRS,qrs,msec,TEMPORAL,,0,1000
 Bradycardia,bradycardia,bpm,TEMPORAL,,0,1000
 Failure rate,failure rate,precent|%,TEMPORAL,,0,100
-LDL Cholesterol,LDL Cholesterol|ldl - cholesterol|LDL-Cholesterol|Low-density lipoprotein|cholesterol,,TEMPORAL,,0,1000
+LDL Cholesterol,LDL Cholesterol|ldl - cholesterol|LDL-Cholesterol|Low-density lipoprotein|cholesterol,mg/dl,TEMPORAL,,0,1000
 Stenosis,asymptomatic stenosis|stenosis,%,TEMPORAL,%,0,100
 KBIT,kaufman brief intelligence test|kbit,,TEMPORAL,,0,300
 Apnea,apnea,,TEMPORAL,,0,1000
