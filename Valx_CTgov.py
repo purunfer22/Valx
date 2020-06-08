@@ -172,7 +172,7 @@ def process_valx_results(original_text, valx_outputs) :
             print('value_count', value_count)
             print(word_block_index)
             if len(result)>0 : 
-                if result[-1]['entityType'] == value_type and (str(int(value) in get_alphanumeric_groups(result[-1]['entity'])) or str(value) in get_alphanumeric_groups(result[-1]['entity'])) : 
+                if result[-1]['EntityType'] == value_type and (str(int(value) in get_alphanumeric_groups(result[-1]['Entity'])) or str(value) in get_alphanumeric_groups(result[-1]['Entity'])) : 
                     continue
 
             if word_block_index == count_word_blocks : 
@@ -195,27 +195,27 @@ def process_valx_results(original_text, valx_outputs) :
                             end_index = word_end_index
                         else : 
                             end_index = next_word_blocks[-1]['end_index']
-                        result.append({'entity':" ".join([word, unit]), 
-                                       "entityType":value_type, 
-                                       "startIndex":word_start_index,
-                                       "endIndex":end_index, 
-                                       "confidence":1})
+                        result.append({'Entity':" ".join([word, unit]), 
+                                       "EntityType":value_type, 
+                                       "StartIndex":word_start_index,
+                                       "EndIndex":end_index, 
+                                       "Confidence":1})
                         word_block_index = word_block_index + len(unit.split(" ")) + 1 
 
                     else : 
-                        result.append({'entity':word_blocks[word_block_index]['word'], 
-                               'entityType':value_type, 
-                               'startIndex':word_blocks[word_block_index]['start_index'],
-                               'endIndex':word_blocks[word_block_index]['end_index'], 
-                               'confidence':1
+                        result.append({'Entity':word_blocks[word_block_index]['word'], 
+                               'EntityType':value_type, 
+                               'StartIndex':word_blocks[word_block_index]['start_index'],
+                               'EndIndex':word_blocks[word_block_index]['end_index'], 
+                               'Confidence':1
                               })
                         word_block_index = word_block_index + 1 
                 else : 
-                    result.append({'entity':word_blocks[word_block_index]['word'], 
-                               'entityType':value_type, 
-                               'startIndex':word_blocks[word_block_index]['start_index'],
-                               'endIndex':word_blocks[word_block_index]['end_index'], 
-                               'confidence':1
+                    result.append({'Entity':word_blocks[word_block_index]['word'], 
+                               'EntityType':value_type, 
+                               'StartIndex':word_blocks[word_block_index]['start_index'],
+                               'EndIndex':word_blocks[word_block_index]['end_index'], 
+                               'Confidence':1
                               })
                     word_block_index = word_block_index + 1 
 
@@ -236,21 +236,21 @@ def process_valx_results(original_text, valx_outputs) :
                                     end_index = word_end_index
                                 else : 
                                     end_index = next_word_blocks[-1]['end_index']
-                                result.append({'entity':" ".join([word, unit]), 
-                                               "entityType":value_type, 
-                                               "startIndex":word_start_index,
-                                               "endIndex":end_index, 
-                                               "confidence":1
+                                result.append({'Entity':" ".join([word, unit]), 
+                                               "EntityType":value_type, 
+                                               "StartIndex":word_start_index,
+                                               "EndIndex":end_index, 
+                                               "Confidence":1
                                                })
                                 word_block_index = word_block_index + len(unit.split(" ")) + 1 
                                 break 
                     else :
                         if str(value)+unit in all_alphanumerics  or str(int(value))+unit in all_alphanumerics: 
-                            result.append({'entity': word, 
-                                           'entityType':value_type,
-                                           'startIndex':word_start_index,
-                                           'endIndex':word_end_index, 
-                                           'confidence':1
+                            result.append({'Entity': word, 
+                                           'EntityType':value_type,
+                                           'StartIndex':word_start_index,
+                                           'EndIndex':word_end_index, 
+                                           'Confidence':1
                                           })
                             word_block_index = word_block_index + 1 
                             break 
