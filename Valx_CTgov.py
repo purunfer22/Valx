@@ -172,7 +172,7 @@ def process_valx_results(original_text, valx_outputs) :
             print('value_count', value_count)
             print(word_block_index)
             if len(result)>0 : 
-                if result[-1]['EntityType'] == value_type and (str(int(value) in get_alphanumeric_groups(result[-1]['Entity'])) or str(value) in get_alphanumeric_groups(result[-1]['Entity'])) : 
+                if result[-1]['entitytype'] == value_type and (str(int(value) in get_alphanumeric_groups(result[-1]['entity'])) or str(value) in get_alphanumeric_groups(result[-1]['entity'])) : 
                     continue
 
             if word_block_index == count_word_blocks : 
@@ -185,6 +185,9 @@ def process_valx_results(original_text, valx_outputs) :
                     word_block_index = all_words.index(str(int(value)))
 
                 if word_block_index <= count_word_blocks - len(unit.split(" ")) - 2 : 
+                    word = word_blocks[word_block_index]["word"]
+                    word_start_index = word_blocks[word_block_index]['start_index']
+
                     next_word_blocks = word_blocks[word_block_index+1:word_block_index+len(unit.split(" "))+1]
                     unit_word = " ".join([word_block['word'] for word_block in next_word_blocks])
                     if unit_word == unit : 
